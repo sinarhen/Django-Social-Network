@@ -1,0 +1,171 @@
+{% extends "_base.html" %}
+{% load static %}
+{% block title %}
+    {{ profile.username }}'s profile
+{% endblock title %}
+
+{% block css %}
+  <link rel="stylesheet" href="{% static 'assets/css/followers.css' %}">
+{% endblock %}
+
+{% block content %}
+<section>
+    <div class="container h-100">
+      <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col">
+          <div class="card">
+            <div class="rounded-top text-white d-flex flex-row" style="background-color: #000; height:200px;">
+              <div class="ms-4 mt-5 d-flex flex-column" style="width: 150px;">
+                <img src="{% if profile.avatar %}{{ profile.avatar.url }}{% else %}{% static 'assets/image/default-avatar.png' %}{% endif %}"
+                  class="img-fluid img-thumbnail mt-4 mb-2"
+                  style="width: 150px; z-index: 1">
+                {% if profile.user == request.user %}
+                  <a type="button" class="btn btn-purple" href="{% url 'users:profile_update' %}" data-mdb-ripple-color="dark"
+                  style="z-index: 1;color: #000;">
+                      Edit profile
+                  </a>
+                {% endif %}
+              </div>
+              <div class="ms-3" style="margin-top: 130px;">
+                {% if profile.first_name or profile.last_name%}
+                <h5>{{ profile.first_name }} {{ profile.last_name}}</h5>
+                {% else %}
+                <h5>No name</h5>
+                {% endif%}
+                
+                {% if profile.date_of_birth %}
+                <p>Born {{ profile.date_of_birth }}</p>
+                {% else %}
+                <p>Born once</p>
+                {% endif %}
+              </div>
+            </div>
+            <div class="p-4 profi" style="background-color: #f8f9fa;">
+              <div class="d-flex justify-content-end text-center py-1">
+                <div>
+                  {% if profile.user != request.user %}
+                    <form action="{% url 'users:follow' profile.id %}" method="post">
+                      {% csrf_token %}
+                      <button class="btn btn-purple" type="submit">Subscribe/Unsubscribe</button>
+                    </form>
+                  {% endif %}
+                </div>
+                <div>
+                  <button class="btn btn-outline-dark btn-purple">
+                    <p class="mb-1 h5">{% if profile.user.posts %}{{ profile.user.posts.count }}{% else %}0{% endif %} </p>
+                    <p class="small text-muted mb-0">Posts</p>
+                  </button>
+                </div>
+                <div class="px-3">
+                  <button class="btn btn-outline-dark btn-purple" onclick="customAlert.alert(urls=[{% for i in profile.user.follows_me.all %}'{% url 'users:profile_detail' i.profile.username %}',{% endfor%}])" id="followsMeCounter">
+                    
+                    <p class="mb-1 h5">{% if profile.user.follows_me %}{{ profile.user.follows_me.count}}{% else %}0{% endif %}</p>
+                    <p class="small text-muted mb-0">Followers</p>
+                  </button>
+                </div>
+                <div>
+                  <button class="btn btn-outline-dark btn-purple" onclick="customAlert.alert(urls=[{% for i in profile.user.follows.all %}'{% url 'users:profile_detail' i.profile.username %}',{% endfor %}])">
+                  <p class="mb-1 h5">{{ profile.user.follows.count }}</p>
+                  <p class="small text-muted mb-0">Following</p>
+                </div>
+              </div>
+            </div>
+            <div class="card-body p-4 text-black">
+              <div class="mb-5">
+                <p class="lead fw-normal mb-1">Bio</p>
+                <div class="p-4 profile-info-section">
+                    <p id="bioDescription">{% if profile.bio %}
+                        {{ profile.bio}}
+                      {% else %}
+                        No bio
+                      {% endif %}
+                    </p>
+                </div>  
+              </div>
+              <div class="d-flex justify-content-between align-items-center mb-4">
+                <p class="lead fw-normal mb-0">Posts {% if profile.user == request.user %}<a type="button" href="{% url 'users:post_create'  %}" class="btn btn-purple">Add post</a>{% endif %}</p>
+              </div>
+              <div class="posts-section">
+                {% for post in profile.user.posts.all %}
+                  <div class="p-4 profile-info-section">
+                    
+                    <div class="row">
+                      
+                      <div class="col-12 col-md-8" style="background-color: black;max-height: 500px; display: flex; justify-content: space-around; min-height: 400px;border: 0.5px solid purple; border-radius: 5px;"> 
+                        <ul class="post-photos-list"> 
+                          {% for post_photo in post.post_photos.all  %}
+                            <li class="post-photos-list-item">
+                              <a href="{% url 'users:post_detail' post.id %}">
+                                <img src="{{ post_photo.photo_resized.url }}" id="postPhoto" class="post-photo" alt="NO IMAGES"
+                              </a>
+                            </li>
+                          {% endfor %}
+                        </ul>
+                      </div>
+                      
+                      <div class="col-6 col-md-4">
+                        <div>
+                          <a href="{% url 'users:profile_detail' profile.username %}">
+                            <img class="small-avatar" src="{% if user.profile.avatar %}{{ user.profile.avatar.url }}{% else %}{% static 'assets/image/unknown.jpg' %}{% endif %}" alt="No image">
+                          </a>
+                          <a class="link"  href="{% url 'users:profile_detail' profile.username%}">{{profile.username}}</a>
+                      
+                          {% if post.updated_at != post.created_at %}
+                              Updated at{{ post.updated_at }}
+                          {% else %}
+                              Created at {{ post.created_at }}
+                          {% endif%}
+                        </div>
+                        <div>
+                          <p>{{ post.description|truncatechars:500 }}</p>
+
+                        </div>
+                        
+                        <div class="row">
+                          <div class="col-sm-4">
+                            <form action="{% url 'users:like' post.id request.path %}" method="POST">
+                                {% csrf_token %}
+ 
+                                <button type="submit" class="btn btn-purple {% for like in request.user.likes.all %}{% if not like in post.likes.all %}{% else %}btn-purple-liked{% endif %}{% endfor %}" >
+                                    <p class="mb-1 h5">{% if post.likes %}{{ post.likes.count }}{% else %}0{% endif %} </p>
+                                    <p class="small text-muted mb-0">Likes</p>
+                                </button>
+                            </form>
+   
+                        </div>
+                        <div class="col-sm-4">
+                          <a href="{% url 'users:post_detail' post.id %}">
+                              <button class="btn btn-outline-dark btn-purple">
+                                  
+                                  <p class="mb-1 h5">{% if post.comments %}{{ post.comments.count }}{% else %}0{% endif %}</p>
+                                  <p class="small text-muted mb-0">Comments</p>
+                              </button>
+                          </a>
+                      </div>    
+                        Leave a comment
+                      <div class="row">
+                        <div class="col-xl-12 align-self-end ">
+                          <form method="post" action="{% url 'users:comment' post.id %}">
+                              {% csrf_token %}
+                              <textarea name="comment_text" id="textAreaComment" class="form-control" placeholder="Enter text..."></textarea>
+                              <button class="btn btn-purple" type="submit">Submit</button>
+                          </form>     
+                        </div>
+                      </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<!-- JS -->
+<script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+<script src="{% static 'assets/js/followers.js' %}"></script>
+<script src="{% static 'assets/js/edit_desc.js' %}"></script>
+{% endblock %}

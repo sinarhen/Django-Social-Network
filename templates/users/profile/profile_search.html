@@ -1,0 +1,67 @@
+{% extends '_base.html' %}
+{% load static %}
+
+{% block title %}
+Search results
+{% endblock %}
+
+{% block content %}
+    {% if profiles %}
+        <h1>
+            {{ profile.count }} Results
+        </h1>
+        {% for profile in profiles %}
+            <div class="card">
+                <div class="row align-items-center">
+                    <div class="col-xl-2">
+                        <a href="{% url 'users:profile_detail' profile.username %}">
+                            <img class="medium-avatar" src="{{ profile.avatar.url }}" alt="">
+                        </a>
+                    </div>
+                    <div class="col-xl-4">
+                        <h2><a class="link" href="{% url 'users:profile_detail' profile.username %}">@{{ profile.username }}</a></h2>
+                        <p>
+                            {% if profile.first_name or profile.last_name%}
+                                <h5>{{ profile.first_name }} {{ profile.last_name}}</h5>
+                            {% else %}
+                                <h5>No name</h5>
+                            {% endif%}<br>
+                            
+                            {% if profile.date_of_birth %}
+                                <p>Born {{ profile.date_of_birth }}</p>
+                            {% else %}
+                                <p>Born once</p>
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="col-xl-2">
+                        <button class="btn btn-outline-dark btn-purple" >
+                            <p class="mb-1 h5">{% if profile.user.posts %}{{ profile.user.posts.count }}{% else %}0{% endif %} </p>
+                            <p class="small text-muted mb-0">Posts</p>
+                        </button>
+                    </div>
+                    <div class="col-xl-2">
+                        <button class="btn btn-outline-dark btn-purple">
+                            
+                            <p class="mb-1 h5">{% if profile.user.follows_me %}{{ profile.user.follows_me.count}}{% else %}0{% endif %}</p>
+                            <p class="small text-muted mb-0">Followers</p>
+                        </button>
+                    </div>        
+                    <div class="col-xl-2">
+                            <button class="btn btn-outline-dark btn-purple">
+                            <p class="mb-1 h5">{{ profile.user.follows.count }}</p>
+                            <p class="small text-muted mb-0">Following</p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="row justify-content-center">
+            <div class="col">
+                <div class='alert alert-warning'>
+                    <h1>Nothing found...</h1>
+                </div>
+            </div>
+        </div> 
+    {% endif %}
+{% endblock %}

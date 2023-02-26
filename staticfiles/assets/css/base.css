@@ -1,0 +1,122 @@
+#navbarLogo{
+    max-height: 100px;
+}
+.navbar-light *{
+    font-size: 20px;
+    color: white;
+}
+body{
+    color: black;
+}
+.btn-purple{
+    border-color: purple;
+    ;
+}
+.btn-purple:hover{
+    background-color: purple;
+    color: white;
+}
+.btn-purple-liked{
+    background-color: purple;
+    color: white;
+}
+.navbar-light{
+    background-color: rgb(0, 0, 0);
+}
+.nav-item{
+    margin-left: 25px;
+}
+.nav-item:first-child{
+    margin-left: 0px;
+}
+
+.btn-registration:hover{
+    background-color: purple;
+    color: white;
+    border-color: white;
+}
+.btn-login{
+    border-color: black;
+    background-color: rgba(0, 0, 0, 0);
+}
+.btn-registration{
+    background-color: rgba(0, 0, 0, 0);
+}
+.btn-login:hover{
+    color: white;
+    border-color: white;
+    background-color: black;
+}
+.auth-block{
+    margin-right: 50px;
+}
+.container{
+    margin-top: 50px;
+}
+.img-fluid{
+    width: 150px; z-index: 1
+}
+.profile-info-section{
+    background-color: #f8f9fa;;
+    border: 1px solid purple;
+    border-radius: 5px;
+}
+.input-textarea{
+    min-height: 120px;
+}
+.post-photo-section{
+    background-color: black;
+    display: flex; 
+    justify-content: space-around;
+    border: 0.5px solid purple;
+    border-radius: 5px;
+}
+.detail-post-photo-section{
+    background-color: black;
+    display: flex; 
+    justify-content: space-around;
+    border: 0.5px solid purple;
+    border-radius: 5px;
+}
+.detail-post-photo-section img{
+    max-width: 720px;
+}
+.small-avatar{
+    max-height: 50px;
+    border-radius: 50%;
+}
+.medium-avatar{
+    max-height: 150px;
+    border-radius: 50%;
+}
+.link{
+    color: black;
+}
+.link:hover{
+    color: black;
+    text-decoration: none;
+    font-weight: bold;
+}
+.comment{
+    margin-top: 30px;
+    border-top: 0.5px solid;
+    border-bottom: 0.5px solid;
+    border-color: purple;
+
+}
+.post-photos-list-item:first-child{
+    display: flex;
+}
+.post-photos-list{
+    list-style: none;
+}
+.post-photos-list-item{
+    
+    display: none;
+}
+.post-photo:hover{
+    filter: brightness(50%);
+}
+.description-section{
+    min-height: 200px;
+}

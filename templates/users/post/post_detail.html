@@ -1,0 +1,96 @@
+{% extends '_base.html' %}
+{% block title %}{{ post.author.profile.username}}'s post {% endblock %}
+{% block content %}
+{% with profile=post.author.profile %}
+<div class="p-4 profile-info-section">
+    <div class="row justify-content-between profile-avatar-post-section">
+        <div class="col-xs-10">
+            <a href="{% url 'users:profile_detail' profile.username %}">
+                <img class="small-avatar" src="{{ profile.avatar.url }}" alt="No image">
+            </a>
+            <a class="link"  href="{% url 'users:profile_detail' profile.username%}">{{profile.username}}</a>
+            {% if post.updated_at != post.created_at %}
+                Updated at {{ post.updated_at }}
+            {% else %}
+                Created at {{ post.created_at }}
+            {% endif%}
+        </div>
+        {% if post.author == request.user %}   
+            <div class='col-xs-2'>
+                <a href="{% url 'users:post_update' post.id %}" class='btn btn-primary'>Edit</a>
+
+                <form method='POST' action="{% url 'users:post_delete' post.id %}">
+                    {% csrf_token %}
+                    <button class='btn btn-danger' type="submit">Delete</button>
+                </form>
+            </div>
+        {% endif %}
+    
+    </div>
+    <div class="row detail-post-photo-section">
+        {% for post_photo in post.post_photos.all %}
+            <a href="{{ post_photo.photo_original.url }}">
+                <img src="{{ post_photo.photo_original.url }}" >
+            </a>
+        {% endfor %}
+    </div>
+
+    <div class="row post-detail-description-comments-likes">
+        <div class="row">
+            <div class="col-md-8">
+                <form action="{% url 'users:like' post.id request.path %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" style="border: 0px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" style="color: 
+                        {% for profile_like in request.user.likes.all %}
+                            {% if profile_like in post.likes.all %}
+                                red
+                            {% endif %}
+                        {% endfor %};" width="48" height="48" fill="currentColor" 
+                        class="bi bi-heart-fill" viewBox="0 0 16 16"> 
+                        <path fill-rule="evenodd" 
+                        d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/> </svg>
+                    </button>
+                </form>
+                {{ post.likes.count }}
+            </div>
+        </div>
+            <p>
+                {{ post.description }}
+            </p>
+    </div>
+    <h2>Comments {{ post.comments.count }}</h2>
+    Leave a comment
+    <form method="post" action="{% url 'users:comment' post.id %}">
+        {% csrf_token %}
+        <textarea name="comment_text" id="textAreaComment" class="form-control" placeholder="Enter text..."></textarea>
+        <button class="btn btn-purple" type="submit">Submit</button>
+    </form>
+    {% for comment in post.comments.all %}
+
+        <div class="comment">
+            {% with comment_author=comment.author.profile %}
+            <h4>Comment from {{ comment_author.username }}</h4>
+            <div class="row">
+                <div class="col-md-2">
+                    <a href="{% url 'users:profile_detail' comment_author.username %}">
+                        <img class="medium-avatar" src="{{ comment_author.avatar.url }}" alt="No Image">
+                    </a>
+                </div>
+                
+                <div class="col-md-10">
+                    <a class="link" href="{% url 'users:profile_detail' comment_author.username %}">{{ comment_author.username }}</a>
+                    {{ comment.text }}    
+                </div>
+            </div>
+            {% endwith %}
+            Created at {{ comment.created_at }}
+        </div>
+
+    {% endfor %}
+</div>
+{% endwith %}
+{% endblock %}
+
+
+

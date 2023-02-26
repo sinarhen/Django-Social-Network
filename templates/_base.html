@@ -1,0 +1,78 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+    <!-- CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'assets/css/base.css' %}">
+    {% block css %}
+        
+    {% endblock css %}
+</head> 
+<body>
+    <!-- Nav bar -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <a class="navbar-brand" href="{% url 'main:home' %}" >
+            <img id="navbarLogo" src="{% static 'assets/image/logo.png' %}">
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+              <a class="btn btn-outline-light btn-purple" href="{% url 'main:home' %}">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+              <a class="btn btn-login" href="{% url 'news:home' %}">News</a>
+            </li>
+            <li class="nav-item">
+              <a class="btn btn-login" href="{% url 'main:about' %}" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                About
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="btn" href="#">©Apply Co.</a>
+            </li>
+          </ul>
+        </div>
+        <div class="collapse navbar-collapse">
+          <form method="get" action="{% url 'users:profile_search' %}">
+            <ul class="navbar-nav mr-auto">
+              <li class="nav-item active">
+                <input class="form-control" id="searchInput" placeholder="Search users..." name="q" required>
+              </li>
+            
+              <li class="nav-item active">
+                <button class="btn btn-success" type="submit">Search</button>
+              </li>
+            </ul>      
+            </form>
+            
+        </div>
+        <div class="auth-block">
+            {% if user.is_authenticated and not user.profile %}
+            <a class="btn btn-purple" href="{% url 'users:profile_create' %}">Create profile</a>
+            {% elif user.profile %}
+              <a class="link" href="{% url 'users:profile_detail' user.profile.username %}">
+                <img class="small-avatar link" src="{% if user.profile.avatar %}{{ user.profile.avatar.url }}{% else %}{% static 'assets/image/unknown.jpg' %}{% endif %}" alt="No Image">
+              </a>
+                <a class="link" style='color:white' href="{% url 'users:logout' %}">logout</a>   
+            {% else %}
+              <a class="btn btn-success btn-registration mr-sm-2" href="{% url 'users:signup' %}">Registration</a>
+              <a class="btn btn-success btn-login" class="my-2 my-sm-0" href="{% url 'users:login' %}">Login</a>
+            {% endif %}
+        </div>
+      </nav>
+      <div class="container">
+        {% block content %}
+
+        {% endblock %}
+      </div>
+</body>
+</html>

@@ -1,0 +1,26 @@
+{% extends "_base.html" %}
+{% load crispy_forms_filters %}
+{% load static %}
+
+{% block css %}
+  <link rel="stylesheet" href="{% static 'assets/css/home.css' %}">
+{% endblock css %}
+
+{% block content %}
+            <h1 class="d-flex justify-content-xl-center">
+                Hello, world!
+            </h1>
+            <h3 class="d-flex justify-content-center">
+                Welcome to our social network which is free-for-all. <br>
+                Complete the registration and relax
+            </h3>
+            {% if user.is_authenticated %}
+                    <a class="btn btn-purple" href="{% url 'users:profile_create' %}">Go to my profile</a>  
+            {% else %}
+                <form action="{% url 'users:signup' %}" method="post">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <button type="submit" class="btn btn-purple">Register</button>
+                </form>
+            {% endif %}
+{% endblock %}

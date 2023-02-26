@@ -1,0 +1,109 @@
+{% extends '_base.html' %}
+{% load static  %}
+{% block title %}News{% endblock %}
+
+{% block content %}
+    {% if posts %}
+        {% for post in posts %}
+            {% with author=post.author %}
+                <div class="p-4 card">
+                    <div class="row justify-content-start">
+                        <div class="col-xl-8">
+                            <ul class="post-photos-list"> 
+                                {% for post_photo in post.post_photos.all  %}
+                                <li class="post-photos-list-item">
+                                    <a href="{% url 'users:post_detail' post.id %}">
+                                    <img src="{{ post_photo.photo_resized.url }}" id="postPhoto" class="post-photo" alt="NO IMAGES"
+                                    </a>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="col-xxl-4 align-self-start description-section">
+                                <div>
+                                    <a href="{% url 'users:profile_detail' author.profile.username %}">
+                                    <img class="small-avatar" src="{{ author.profile.avatar.url }}" alt="No image">
+                                    </a>
+                                    <a class="link"  href="{% url 'users:profile_detail' author.profile.username%}">{{profile.username}}</a>
+                                
+                                    {% if post.updated_at != post.created_at %}
+                                        Updated at {{ post.updated_at }}
+                                    {% else %}
+                                        Created at {{ post.created_at }}
+                                    {% endif%}
+                                </div>
+                                    <h4><a class="link"  href="{% url 'users:profile_detail' author.profile.username %}">@{{ author.profile.username}}</a></h4>
+                                    <p>
+                                        {{ post.description|truncatechars:300 }}
+                                    </p>
+                                    Leave a comment
+                                    <form method="post" action="{% url 'users:comment' post.id %}">
+                                        {% csrf_token %}
+                                        <textarea name="comment_text" id="textAreaComment" class="form-control" placeholder="Enter text..."></textarea>
+                                        <button class="btn btn-purple" type="submit">Submit</button>
+                                    </form>
+                        </div>
+                        <hr>
+                    </div>
+                    <div class="row justify-content-md-center">
+                            <div class="col-md-1">
+                                <form action="{% url 'users:like' post.id request.path %}" method="POST">
+                                    {% csrf_token %}
+    
+                                    <button type="submit" class="btn btn-purple {% for like in request.user.likes.all %}{% if not like in post.likes.all %}{% else %}btn-purple-liked{% endif %}{% endfor %}" >
+                                        <p class="mb-1 h5">{% if post.likes %}{{ post.likes.count }}{% else %}0{% endif %} </p>
+                                        <p class="small text-muted mb-0">Likes</p>
+                                    </button>
+                                </form>
+    
+                            </div>
+                            <div class="col-md-1">
+                                <a href="{% url 'users:post_detail' post.id %}">
+                                    <button class="btn btn-outline-dark btn-purple">
+                                        
+                                        <p class="mb-1 h5">{% if post.comments %}{{ post.comments.count }}{% else %}0{% endif %}</p>
+                                        <p class="small text-muted mb-0">Comments</p>
+                                    </button>
+                                </a>
+                            </div>        
+                        </div>
+                    </div>
+                </div>
+            {% endwith %}
+        {% endfor %}
+    {% else %}
+        <h2>There is empty! Try to follow someone!</h2>
+        <div class="row align-items-center justify-content-center">
+            {% for user in recommended_users %}
+                {% with profile=user.profile %}
+                <a href="{% url 'users:profile_detail' profile.username %}">
+                    <div class="col-md-4">
+                        
+                        <div class="card">
+                        
+                            <div>
+                                <a href="{% url 'users:profile_detail' profile.username %}">
+                                    <img class="medium-avatar" src="{% if user.profile.avatar %}{{ user.profile.avatar.url }}{% else %}{% static 'assets/image/unknown.jpg' %}{% endif %}" alt="">
+                                </a>
+                            </div>
+                            <div>
+                                @{{ profile.username }}
+                            </div>
+                            <div>
+                                {% if profile.first_name or profile.last_name%}
+                                    <h5>{{ profile.first_name }} {{ profile.last_name}}</h5>
+                                {% else %}
+                                    <h5>No name</h5>
+                                {% endif%}<br>
+                            </div>
+                            <div>
+                                {{ profile.follows_me.all.count }} Followers
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                {% endwith %}
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}

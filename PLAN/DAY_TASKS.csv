@@ -1,0 +1,6 @@
+DAY,TASK
+1,"Configure settings, database, create apps, models prototypes, connect to github"
+2,"Models(CustomUser, Relationship System, Profile, Likes, Comments)"
+3,"Models(CustomUser, Relationship System, Profile, Likes, Comments)"
+4,"Authentication(OAuth, Github, Google, others...)"
+5,"Design(CSS, HTML, JS)"
